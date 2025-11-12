@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+	color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body { background: #0b0b10; }
+
+.container-page {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* Theme support via data-theme on :root */
+[data-theme="neon"] {
+	--bg: #0b0b10;
+	--card: #15151d;
+	--accent-yellow: #f6d32d;
+	--accent-red: #ff3b3b;
+	--accent-green: #00d17a;
+}
+
+[data-theme="dim"] {
+	--bg: #0e0e12;
+	--card: #161620;
+	--accent-yellow: #e8c547;
+	--accent-red: #ff6b6b;
+	--accent-green: #45d1a0;
+}
+
+/* Utility hook to map to Tailwind colors already defined */
+body { background: var(--bg); }
