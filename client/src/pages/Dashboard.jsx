@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import StatsCards from '../components/dashboard/StatsCards';
 import EventTable from '../components/dashboard/EventTable';
 import DeviceList from '../components/dashboard/DeviceList';
 import VehicleList from '../components/dashboard/VehicleList';
@@ -22,6 +23,7 @@ const Dashboard = () => {
     <div className="p-4">
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2 space-y-4">
+          <StatsCards />
           <EventTable />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DeviceList />
