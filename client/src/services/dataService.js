@@ -25,7 +25,7 @@ export const getEvents = async () => {
     },
   ];
 };
-
+//hjk
 export const getDevices = async () => {
   await new Promise((r) => setTimeout(r, 200));
   return [
