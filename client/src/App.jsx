@@ -1,11 +1,16 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
-import Sidebar from './components/layout/Sidebar';
+import RoleSidebar from './components/layout/RoleSidebar';
+import RoleSidebarMobile from './components/layout/RoleSidebarMobile';
+import ConsoleSidebarTrigger from './components/layout/ConsoleSidebarTrigger';
+import { MobileSidebarProvider, useMobileSidebar } from './contexts/MobileSidebarContext';
 import Footer from './components/layout/Footer';
-import Dashboard from './pages/Dashboard';
+import RoleDashboard from './pages/RoleDashboard';
 import DeviceManagement from './pages/DeviceManagement';
 import EventLog from './pages/EventLog';
 import Settings from './pages/Settings';
+import Users from './pages/Users';
+import Analytics from './pages/Analytics';
 import Home from './pages/Home';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -31,17 +36,22 @@ const RouteWrapper = ({ children }) => {
 };
 
 const App = () => {
+	const location = useLocation();
+	const pathname = location.pathname || '';
+	const showConsoleUI = ['/dashboard'].some((x) => pathname.startsWith(x));
 	return (
 			<AuthProvider>
 				<DetectionProvider>
 					<ThemeProvider>
 					<ToastProvider>
-					<BrowserRouter>
+					<MobileSidebarProvider>
 						<div className="min-h-screen bg-bg text-white flex flex-col">
 							<Navbar />
 							<div className="flex flex-1">
-								{/* Sidebar only on dashboard */}
-								{location.pathname.startsWith('/dashboard') ? <Sidebar /> : null}
+								{/* Sidebar on dashboard routes only */}
+								{showConsoleUI ? <RoleSidebar /> : null}
+								{showConsoleUI ? <MobileSidebarPortal /> : null}
+								{showConsoleUI ? <ConsoleSidebarTrigger /> : null}
 								<main className="flex-1">
 									<RouteWrapper>
 										<Routes>
@@ -49,9 +59,11 @@ const App = () => {
 											<Route path="/about" element={<About />} />
 											<Route path="/contact" element={<Contact />} />
 											<Route path="/login" element={<Login />} />
-											<Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+											<Route path="/dashboard" element={<ProtectedRoute><RoleDashboard /></ProtectedRoute>} />
 											<Route path="/devices" element={<ProtectedRoute><DeviceManagement /></ProtectedRoute>} />
 											<Route path="/events" element={<ProtectedRoute><EventLog /></ProtectedRoute>} />
+											<Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+											<Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
 											<Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 											<Route path="*" element={<NotFound />} />
 										</Routes>
@@ -60,7 +72,7 @@ const App = () => {
 							</div>
 							<Footer />
 						</div>
-							</BrowserRouter>
+						</MobileSidebarProvider>
 							</ToastProvider>
 							</ThemeProvider>
 			</DetectionProvider>
@@ -69,4 +81,10 @@ const App = () => {
 };
 
 export default App;
+
+// Portal that mounts mobile sidebar and exposes control via context
+const MobileSidebarPortal = () => {
+	const { open, setOpen } = useMobileSidebar();
+	return <RoleSidebarMobile open={open} onClose={() => setOpen(false)} />;
+};
 

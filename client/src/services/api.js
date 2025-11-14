@@ -1,9 +1,11 @@
 import axios from 'axios';
 
-// Base axios instance (endpoints are mocked / not real)
+// Use Vite env or default to local backend
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4500/api';
+
 export const api = axios.create({
-  baseURL: 'https://mock-detection.local/api',
-  timeout: 5000,
+  baseURL: BASE_URL,
+  timeout: 8000,
 });
 
 api.interceptors.response.use(

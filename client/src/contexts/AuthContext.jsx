@@ -7,7 +7,7 @@ const AuthContext = createContext({ user: null, login: () => {}, logout: () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem('auth_user');
-    return raw ? JSON.parse(raw) : { name: 'Ayush', role: 'Driver' };
+    return raw ? JSON.parse(raw) : null;
   });
 
   const login = (name = 'Ayush', role = 'Driver') => setUser({ name, role });

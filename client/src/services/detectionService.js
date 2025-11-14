@@ -1,26 +1,26 @@
-// Mock detection service functions
+import { api } from './api';
 
 export const getDeviceStatus = async () => {
-  // simulate latency
-  await new Promise((r) => setTimeout(r, 300));
-  const confidence = Number(Math.random().toFixed(2));
+  // Approximate device "confidence" from most recent event's riskLevel
+  const { data } = await api.get('/events');
+  const events = Array.isArray(data) ? data : [];
+  const latest = events[0];
+  const confidence = typeof latest?.riskLevel === 'number' ? Number(latest.riskLevel.toFixed(2)) : 0;
   return { confidence };
 };
 
 export const getEvents = async () => {
-  await new Promise((r) => setTimeout(r, 300));
-  // last 10 events mock
-  const now = Date.now();
-  const sample = Array.from({ length: 10 }).map((_, i) => {
-    const risk = Number(Math.random().toFixed(2));
+  const { data } = await api.get('/events');
+  const events = Array.isArray(data) ? data : [];
+  return events.map((e) => {
+    const risk = typeof e.riskLevel === 'number' ? Number(e.riskLevel.toFixed(2)) : 0;
     return {
-      id: `evt-${i}`,
-      date: new Date(now - i * 3600_000).toISOString(),
+      id: e._id,
+      date: e.timestamp || e.createdAt || new Date().toISOString(),
       risk,
       status: risk >= 0.7 ? 'High Risk' : risk >= 0.4 ? 'Possible Impairment' : 'Normal',
-      deviceId: `mock-${100 + i}`,
+      deviceId: e.deviceId || '—',
       action: risk >= 0.7 ? 'Suggested Pull Over' : 'Monitoring',
     };
   });
-  return sample;
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Button from '../components/common/Button';
 
 const Login = () => {
   const { login, user } = useAuth();
@@ -33,9 +34,10 @@ const Login = () => {
           <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-gray-200">
             <option>Driver</option>
             <option>Admin</option>
+            <option>SuperAdmin</option>
           </select>
         </div>
-        <button className="px-4 py-2 rounded-lg bg-accent-yellow text-black text-sm">Login</button>
+        <Button type="submit" variant="primary" className="w-full">Login</Button>
       </form>
     </div>
   );

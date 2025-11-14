@@ -1,87 +1,79 @@
-// Mock data services returning schema-compliant objects
+import { api } from './api';
+
+// Live data from backend, shaped for current UI components
 
 export const getEvents = async () => {
-  await new Promise((r) => setTimeout(r, 200));
-  return [
-    {
-      eventId: 'e_998877',
-      driverId: 'u_7741_RaviK',
-      vehicleId: 'MH04TR1234',
-      event_timestamp: '2025-11-11T11:19:21Z',
-      location: { lat: 19.1234, lon: 72.9876 },
-      eventType: 'DISTRACTION',
-      metadata: { eventDetail: 'Phone Use Detected' },
-      status: 'NEEDS_REVIEW',
-    },
-    {
-      eventId: 'e_998878',
-      driverId: 'u_7742_Anoop',
-      vehicleId: 'MH04TR5678',
-      event_timestamp: '2025-11-11T12:45:10Z',
-      location: { lat: 19.076, lon: 72.8777 },
-      eventType: 'DROWSINESS',
-      metadata: { eventDetail: 'Yawning & Eye Closure' },
-      status: 'REVIEWED_BY_MANAGER',
-    },
-  ];
+  const { data } = await api.get('/events');
+  const events = Array.isArray(data) ? data : [];
+  return events.map((e) => ({
+    eventId: e._id,
+    eventType: e.status || 'ALERT',
+    driverId: '—',
+    vehicleId: e.deviceId || '—',
+    status: e.status || '—',
+    metadata: { eventDetail: e.message || '' },
+    event_timestamp: e.timestamp || e.createdAt || new Date().toISOString(),
+  }));
 };
-//hjk
+
 export const getDevices = async () => {
-  await new Promise((r) => setTimeout(r, 200));
-  return [
-    {
-      device_id: 'd_112',
-      VehicleId: 'MH04TR1234',
-      lastHeartbeat: '2025-11-11T15:19:00Z',
-      status: 'ACTIVE',
-      config: {
-        ear_threshold: 0.2,
-        imu_g_force_threshold: 1.5,
-        drowsy_time_window_sec: 120,
-        drowsy_freq_per_window: 3,
-        gps_update_interval_sec: 10,
-        config_update_interval_sec: 3600,
-        wifi_ssid: 'Idealab5g',
-        wifi_password: 'Idea@lnct',
-      },
-    },
-  ];
+  const { data } = await api.get('/devices');
+  const devices = Array.isArray(data) ? data : [];
+  return devices.map((d) => ({
+    device_id: d._id,
+    VehicleId: d.name || '—',
+    lastHeartbeat: d.createdAt || new Date().toISOString(),
+    status: (d.status || 'inactive').toUpperCase(),
+    config: {},
+  }));
 };
 
 export const getVehicles = async () => {
-  await new Promise((r) => setTimeout(r, 200));
-  return [
-    {
-      licensePlate: 'MH-04-TR-1234',
-      model: 'Tata Prima 2830.K',
-      deviceId: 'd_112',
-      currentDriverId: 'u_7741_RaviK',
-      lastLocation: { lat: 19.076, lon: 72.8777 },
-      lastSeen: '2025-11-11T15:18:00Z',
-    },
-  ];
+  // No vehicles API in backend yet; return empty list
+  return [];
 };
 
 export const getUsers = async () => {
-  await new Promise((r) => setTimeout(r, 200));
+  const { data } = await api.get('/users');
+  const user = data && typeof data === 'object' ? data : null;
+  if (!user) return [];
+  // Mock fallbacks for phone and vehicle make/plate when backend fields are absent
+  const mockPhones = ['+91 98765 43210', '+91 91234 56789', '+91 98012 34567'];
+  const mockVehicles = [
+    { make: 'Maruti Suzuki Alto', plate: 'MH12 AB 1234' },
+    { make: 'Hyundai i20', plate: 'DL05 CD 4321' },
+    { make: 'Tata Nexon', plate: 'GJ01 EF 2468' },
+    { make: 'Honda City', plate: 'KA02 GH 1357' },
+  ];
+
+  const pickBySeed = (arr, seedString) => {
+    try {
+      const s = String(seedString || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+      return arr[s % arr.length];
+    } catch {
+      return arr[0];
+    }
+  };
+
+  const phone = user.phone || user.mobile || user.contactNumber || pickBySeed(mockPhones, user._id || user.createdAt);
+  const vehicleObj = user.vehicle || user.vehicleInfo || null;
+  const vehicleDisplay =
+    (vehicleObj && (vehicleObj.make || vehicleObj.model) && (vehicleObj.plate || vehicleObj.registration)
+      ? `${vehicleObj.make || vehicleObj.model} (${vehicleObj.plate || vehicleObj.registration})`
+      : (() => {
+          const v = pickBySeed(mockVehicles, (user._id || user.createdAt || '') + phone);
+          return `${v.make} (${v.plate})`;
+        })());
+
   return [
     {
-      name: 'Ravi Kumar',
-      phone: '+919876543210',
-      role: 'driver',
-      vehicleId: 'MH04TR1234',
-      emergencyContact: { name: 'Sita Kumar', phone: '+919876543211' },
-      safetyScore: 85,
-      createdAt: '2025-11-10T10:00:00Z',
-    },
-    {
-      name: 'Anoop Singh',
-      phone: '+919800000000',
-      role: 'manager',
-      vehicleId: null,
-      emergencyContact: { name: 'Office', phone: '+911234567890' },
-      safetyScore: 92,
-      createdAt: '2025-11-09T12:00:00Z',
+      name: user.name || 'Default',
+      phone,
+      role: user.role || 'driver',
+      vehicleId: vehicleDisplay,
+      emergencyContact: user.emergencyContact ? { name: '—', phone: user.emergencyContact } : null,
+      safetyScore: user.safetyScore || 0,
+      createdAt: user.createdAt || new Date().toISOString(),
     },
   ];
 };
