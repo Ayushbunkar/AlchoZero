@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 
+//login page is a mock login for testing purposes
 const Login = () => {
   const { login, user } = useAuth();
   const [name, setName] = useState('Ayush');
