@@ -40,7 +40,7 @@ const RoleSidebarMobile = ({ open, onClose }) => {
   ];
 
   return (
-    <div className={`md:hidden fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
+    <div className={`md:hidden fixed left-0 right-0 bottom-0 top-14 z-50 ${open ? '' : 'pointer-events-none'}`}>
       {/* Backdrop */}
       <div
         className={`absolute inset-0 bg-black/50 transition-opacity ${open ? 'opacity-100' : 'opacity-0'}`}
@@ -50,8 +50,7 @@ const RoleSidebarMobile = ({ open, onClose }) => {
       <div
         className={`absolute top-0 left-0 h-full w-64 bg-bg-subtle border-r border-white/10 p-4 transition-transform ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex items-center justify-between mb-3">
-          <div className="font-semibold text-white">Menu</div>
+        <div className="flex items-center justify-end mb-3">
           <button aria-label="Close" onClick={onClose} className="text-gray-300 hover:text-white"><X size={18} /></button>
         </div>
         <div className="flex flex-col gap-1">

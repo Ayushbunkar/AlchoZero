@@ -11,7 +11,9 @@ import EventLog from './pages/EventLog';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
 import Analytics from './pages/Analytics';
+import AnalyticsDevice from './pages/AnalyticsDevice';
 import Home from './pages/Home';
+import Services from './pages/Services';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -38,7 +40,8 @@ const RouteWrapper = ({ children }) => {
 const App = () => {
 	const location = useLocation();
 	const pathname = location.pathname || '';
-	const showConsoleUI = ['/dashboard'].some((x) => pathname.startsWith(x));
+	const consoleRoutes = ['/dashboard', '/devices', '/events', '/users', '/analytics', '/settings'];
+	const showConsoleUI = consoleRoutes.some((x) => pathname.startsWith(x));
 	return (
 			<AuthProvider>
 				<DetectionProvider>
@@ -57,6 +60,7 @@ const App = () => {
 										<Routes>
 											<Route path="/" element={<Home />} />
 											<Route path="/about" element={<About />} />
+											<Route path="/services" element={<Services />} />
 											<Route path="/contact" element={<Contact />} />
 											<Route path="/login" element={<Login />} />
 											<Route path="/dashboard" element={<ProtectedRoute><RoleDashboard /></ProtectedRoute>} />
@@ -64,6 +68,7 @@ const App = () => {
 											<Route path="/events" element={<ProtectedRoute><EventLog /></ProtectedRoute>} />
 											<Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
 											<Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+											<Route path="/analytics/device/:deviceId" element={<ProtectedRoute><AnalyticsDevice /></ProtectedRoute>} />
 											<Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 											<Route path="*" element={<NotFound />} />
 										</Routes>

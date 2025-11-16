@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
+import Tilt3D from '../common/Tilt3D';
 
 const DetectionIndicator = ({ confidence }) => {
   const pct = Math.round(confidence * 100);
@@ -7,6 +8,7 @@ const DetectionIndicator = ({ confidence }) => {
   else if (confidence >= 0.4) color = 'bg-accent-yellow';
 
   return (
+    <Tilt3D>
     <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-gray-300 text-sm">Risk Meter</span>
@@ -22,6 +24,7 @@ const DetectionIndicator = ({ confidence }) => {
       </div>
       <div className="mt-2 text-xs text-gray-400">{pct}% risk</div>
     </div>
+    </Tilt3D>
   );
 };
 

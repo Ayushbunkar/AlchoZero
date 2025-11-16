@@ -8,9 +8,9 @@ export default {
           subtle: '#15151d',
         },
         accent: {
-          yellow: '#f6d32d',
-          red: '#ff3b3b',
-          green: '#00d17a',
+          yellow: '#2563eb',
+          red: '#ef4444',
+          green: '#22c55e',
         },
       },
       boxShadow: {

@@ -6,6 +6,7 @@ import detectionRoutes from "./routes/detectionRoutes.js";
 import deviceRoutes from "./routes/deviceRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import vehicleRoutes from "./routes/vehicleRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +48,7 @@ app.use("/api/detection", detectionRoutes);
 app.use("/api/devices", deviceRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 
 app.get("/", (req, res) => {
   res.send("Drunk Driving Detection Backend Running 🚗");

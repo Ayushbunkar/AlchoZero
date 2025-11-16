@@ -8,4 +8,7 @@ const eventSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 });
 
+// Efficient queries by device and recency
+eventSchema.index({ deviceId: 1, timestamp: -1 });
+
 export default mongoose.model("Event", eventSchema);

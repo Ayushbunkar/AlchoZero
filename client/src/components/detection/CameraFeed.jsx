@@ -1,8 +1,10 @@
 import { useCamera } from '../../hooks/useCamera';
+import Tilt3D from '../common/Tilt3D';
 
 const CameraFeed = () => {
   const { videoRef, error } = useCamera();
   return (
+    <Tilt3D>
     <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft overflow-hidden">
       <div className="p-3 text-gray-300 text-sm border-b border-white/10">Camera Feed</div>
       <div className="aspect-video bg-black">
@@ -13,6 +15,7 @@ const CameraFeed = () => {
         )}
       </div>
     </div>
+    </Tilt3D>
   );
 };
 

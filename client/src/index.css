@@ -16,18 +16,50 @@ body { background: #0b0b10; }
 [data-theme="neon"] {
 	--bg: #0b0b10;
 	--card: #15151d;
-	--accent-yellow: #f6d32d;
-	--accent-red: #ff3b3b;
-	--accent-green: #00d17a;
+	--accent-yellow: #2563eb;
+	--accent-red: #ef4444;
+	--accent-green: #22c55e;
 }
 
 [data-theme="dim"] {
 	--bg: #0e0e12;
 	--card: #161620;
-	--accent-yellow: #e8c547;
-	--accent-red: #ff6b6b;
-	--accent-green: #45d1a0;
+	--accent-yellow: #1d4ed8;
+	--accent-red: #f87171;
+	--accent-green: #34d399;
 }
 
 /* Utility hook to map to Tailwind colors already defined */
 body { background: var(--bg); }
+
+/* Map Tailwind utility classes to CSS variables for themeability */
+.bg-bg { background-color: var(--bg) !important; }
+.bg-bg-subtle { background-color: var(--card) !important; }
+[data-theme="light"] .bg-bg-subtle\/80 { background-color: rgba(246, 248, 251, 0.8) !important; }
+.text-accent-yellow { color: var(--accent-yellow) !important; }
+.bg-accent-yellow { background-color: var(--accent-yellow) !important; }
+.border-accent-yellow { border-color: var(--accent-yellow) !important; }
+
+/* Light theme tokens */
+[data-theme="light"] {
+	--bg: #ffffff;
+	--card: #f6f8fb; /* light gray card */
+	--accent-yellow: #2563eb; /* blue primary */
+	--accent-red: #ef4444;
+	--accent-green: #22c55e;
+	color-scheme: light;
+}
+
+/* Light theme readability overrides for dark-first utilities */
+[data-theme="light"] .text-white { color: #0f172a !important; }
+[data-theme="light"] .text-gray-200 { color: #374151 !important; }
+[data-theme="light"] .text-gray-300 { color: #4b5563 !important; }
+[data-theme="light"] .text-gray-400 { color: #6b7280 !important; }
+[data-theme="light"] .text-gray-500 { color: #6b7280 !important; }
+
+[data-theme="light"] .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+[data-theme="light"] .border-white\/10 { border-color: rgba(0,0,0,0.12) !important; }
+[data-theme="light"] .border-white\/20 { border-color: rgba(0,0,0,0.2) !important; }
+
+/* Optional: make default shadows a bit softer on light */
+[data-theme="light"] .shadow-soft { box-shadow: 0 6px 20px rgba(0,0,0,0.08) !important; }

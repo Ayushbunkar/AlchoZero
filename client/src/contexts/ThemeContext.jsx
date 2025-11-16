@@ -9,7 +9,12 @@ export const ThemeProvider = ({ children }) => {
     localStorage.setItem('theme', theme);
     document.documentElement.dataset.theme = theme;
   }, [theme]);
-  const toggleTheme = () => setTheme((t) => (t === 'neon' ? 'dim' : 'neon'));
+  const toggleTheme = () =>
+    setTheme((t) => {
+      const order = ['neon', 'dim', 'light'];
+      const idx = order.indexOf(t);
+      return order[(idx + 1) % order.length];
+    });
   const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

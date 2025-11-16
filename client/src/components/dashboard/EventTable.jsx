@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getEvents } from '../../services/dataService';
+import Tilt3D from '../common/Tilt3D';
 
 const EventTable = () => {
   const [events, setEvents] = useState([]);
@@ -9,6 +10,7 @@ const EventTable = () => {
   }, []);
 
   return (
+    <Tilt3D>
     <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 overflow-auto">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-accent-yellow">Recent Events</h3>
@@ -44,6 +46,7 @@ const EventTable = () => {
         </tbody>
       </table>
     </div>
+    </Tilt3D>
   );
 };
 

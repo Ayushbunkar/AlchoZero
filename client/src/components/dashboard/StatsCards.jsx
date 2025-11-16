@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getEvents, getDevices, getVehicles, getUsers } from '../../services/dataService';
 
+import Tilt3D from '../common/Tilt3D';
+
 const Stat = ({ label, value, accent = 'text-accent-yellow' }) => (
-  <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4">
-    <div className="text-[11px] text-gray-400 mb-1">{label}</div>
-    <div className={`text-2xl font-semibold ${accent}`}>{value}</div>
-  </div>
+  <Tilt3D maxTilt={6} scale={1.02}>
+    <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4">
+      <div className="text-[11px] text-gray-400 mb-1">{label}</div>
+      <div className={`text-2xl font-semibold ${accent}`}>{value}</div>
+    </div>
+  </Tilt3D>
 );
 
 const StatsCards = () => {
@@ -16,13 +20,23 @@ const StatsCards = () => {
     let mounted = true;
     (async () => {
       try {
-        const [e, d, v, u] = await Promise.all([
+        const results = await Promise.allSettled([
           getEvents(),
           getDevices(),
           getVehicles(),
           getUsers(),
         ]);
-        if (mounted) setCounts({ events: e.length, devices: d.length, vehicles: v.length, users: u.length });
+        if (!mounted) return;
+        const [e, d, v, u] = results.map((r) => (r.status === 'fulfilled' ? r.value : []));
+        setCounts({
+          events: Array.isArray(e) ? e.length : 0,
+          devices: Array.isArray(d) ? d.length : 0,
+          vehicles: Array.isArray(v) ? v.length : 0,
+          users: Array.isArray(u) ? u.length : 0,
+        });
+      } catch (err) {
+        // Shouldn't reach here with allSettled, but guard anyway
+        console.warn('StatsCards load failed:', err?.message || err);
       } finally {
         if (mounted) setLoading(false);
       }

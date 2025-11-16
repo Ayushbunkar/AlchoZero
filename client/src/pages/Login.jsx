@@ -18,13 +18,40 @@ const Login = () => {
     navigate(from, { replace: true });
   };
 
+  // Prefill from URL params: /login?name=Rohit&role=Driver&auto=1
+  useEffect(() => {
+    const params = new URLSearchParams(location.search || '');
+    const qName = params.get('name');
+    const qRole = params.get('role');
+    const qAuto = params.get('auto');
+
+    const normalizeRole = (val) => {
+      const v = String(val || '').toLowerCase();
+      if (v.startsWith('super')) return 'SuperAdmin';
+      if (v.startsWith('admin')) return 'Admin';
+      return 'Driver';
+    };
+
+    if (qName) setName(qName);
+    if (qRole) setRole(normalizeRole(qRole));
+
+    if (qAuto && (qName || user)) {
+      // Auto-login for demo links
+      if (!user) {
+        login(qName || 'Guest', normalizeRole(qRole));
+      }
+      const from = (location.state && location.state.from) || localStorage.getItem('last_protected') || '/dashboard';
+      navigate(from, { replace: true });
+    }
+  }, [location.search]);
+
   useEffect(() => {
     if (user) navigate('/dashboard', { replace: true });
   }, [user, navigate]);
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-semibold text-accent-yellow mb-4">Login (Mock)</h1>
+      <h1 className="text-2xl font-semibold text-accent-yellow mb-4">Login </h1>
       <form onSubmit={submit} className="bg-bg-subtle border border-white/10 rounded-xl p-4 space-y-3">
         <div>
           <label className="text-xs text-gray-400">Name</label>

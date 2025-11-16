@@ -53,6 +53,25 @@ try {
   const devices = devsRes.data;
   log('GET /api/devices (count)', Array.isArray(devices) ? devices.length : 0);
 
+  // 5b) Vehicles: add and list
+  try {
+    const addVehRes = await axios.post(`${BASE}/vehicles/add`, {
+      licensePlate: `MH12 ${Math.floor(Math.random()*9000+1000)}`,
+      model: 'Hyundai i20',
+      deviceId: devices?.[0]?._id || 'dev-sim',
+      currentDriverId: 'drv-sim',
+    });
+    log('POST /api/vehicles/add', addVehRes.data);
+  } catch (e) {
+    log('POST /api/vehicles/add (skipped/failed)', e?.message || '');
+  }
+  try {
+    const vehsRes = await axios.get(`${BASE}/vehicles`);
+    log('GET /api/vehicles (count)', Array.isArray(vehsRes.data) ? vehsRes.data.length : 0);
+  } catch (e) {
+    log('GET /api/vehicles (failed)', e?.message || '');
+  }
+
   // 6) Post a detection (high risk)
   const confidence = 0.82;
   const detRes = await axios.post(`${BASE}/detection/update`, {

@@ -10,7 +10,11 @@ const NavItem = ({ to, children }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `px-3 py-1 rounded-lg text-sm border-b-2 ${isActive ? 'border-accent-yellow text-white' : 'border-transparent text-gray-400 hover:text-white'}`
+      `px-3 py-1 rounded-lg text-sm border-b-2 ${
+        isActive
+          ? 'border-accent-yellow text-white'
+          : 'border-transparent text-white md:text-gray-400 md:hover:text-white'
+      }`
     }
   >
     {children}
@@ -33,7 +37,7 @@ const Navbar = () => {
   }, [open]);
   return (
     <>
-    <nav className="w-full bg-bg-subtle/80 backdrop-blur border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+    <nav className="w-full bg-bg-subtle/80 backdrop-blur border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-70">
       <div className="flex items-center gap-4">
         <Link to="/" className="text-accent-yellow font-semibold tracking-wide">AlchoZero</Link>
       </div>
@@ -48,12 +52,13 @@ const Navbar = () => {
       >
         <Menu size={18} />
       </button>
-      <div id="navbar-mobile-menu" className={`flex-col md:flex-row md:flex ${open ? 'flex' : 'hidden'} md:items-center gap-2 absolute md:static left-0 right-0 top-full md:top-auto bg-bg md:bg-transparent px-4 md:px-0 py-3 md:py-0 border-b md:border-none border-white/10 shadow-xl z-60`}>
+      <div id="navbar-mobile-menu" className={`flex-col md:flex-row md:flex ${open ? 'flex' : 'hidden'} md:items-center gap-2 absolute md:static left-0 right-0 top-full md:top-auto bg-bg md:bg-transparent px-4 md:px-0 py-3 md:py-0 border-b md:border-none border-white/10 shadow-xl z-80 text-white`}>
   <NavItem to="/">Home</NavItem>
   <NavItem to="/about">About</NavItem>
+  <NavItem to="/services">Services</NavItem>
   <NavItem to="/contact">Contact</NavItem>
   {user && <NavItem to="/dashboard">Dashboard</NavItem>}
-        <button aria-label="Toggle Theme" onClick={toggleTheme} className="px-2 py-1 rounded-lg text-sm border border-white/10 text-gray-300 hover:text-white">
+        <button aria-label="Toggle Theme" onClick={toggleTheme} className="px-2 py-1 rounded-lg text-sm border border-white/10 text-white md:text-gray-300 md:hover:text-white">
           {theme === 'neon' ? <Moon size={16} /> : <SunMedium size={16} />}
         </button>
         {user ? (
