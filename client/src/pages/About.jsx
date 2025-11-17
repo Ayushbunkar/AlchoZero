@@ -3,6 +3,7 @@ import MotionInView from '../components/common/MotionInView';
 import StatsStrip from '../components/marketing/StatsStrip';
 import GradientGlow from '../components/common/GradientGlow';
 import Tilt3D from '../components/common/Tilt3D';
+import teamBanner from '../assets/images/team.png';
 
 const About = () => {
   const team = [
@@ -67,7 +68,7 @@ const About = () => {
           </MotionInView>
           <MotionInView>
             <img
-              src="/images/about-banner.jpg"
+              src={teamBanner}
               alt="Team collaboration and system architecture overview"
               className="w-full h-auto rounded-xl border border-white/10 shadow-soft object-cover"
               loading="lazy"

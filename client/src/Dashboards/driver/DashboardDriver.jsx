@@ -2,7 +2,7 @@
 import Button from '../../components/common/Button';
 import MyRecentAlerts from '../../components/dashboard/MyRecentAlerts';
 import { useEffect, useState, useMemo } from 'react';
-import { getEvents } from '../../services/detectionService';
+import { getMyEvents } from '../../services/api';
 import SimplePie from '../../components/analytics/SimplePie';
 import SimpleBar from '../../components/analytics/SimpleBar';
 import SimpleLine from '../../components/analytics/SimpleLine';
@@ -27,13 +27,19 @@ const DashboardDriver = () => {
     (async () => {
       setLoading(true);
       try {
-        const ev = await getEvents({ deviceId, limit: 50 });
+        const raw = await getMyEvents({ limit: 50 });
         if (!mounted) return;
-        if (Array.isArray(ev) && ev.length > 0) {
-          setEvents(ev);
-        } else {
-          setEvents(Array.isArray(localEvents) ? localEvents.slice(0, 50) : []);
-        }
+        const ev = Array.isArray(raw) ? raw.map(e => ({
+          id: e._id || e.id,
+          date: e.timestamp || e.date || new Date().toISOString(),
+          risk: typeof e.riskLevel === 'number' ? Number(e.riskLevel.toFixed(2)) : (typeof e.risk === 'number' ? e.risk : 0),
+          deviceId: e.deviceId,
+          status: e.status || (e.riskLevel >= 0.7 ? 'High Risk' : e.riskLevel >= 0.4 ? 'Possible Impairment' : 'Normal'),
+          action: e.riskLevel >= 0.7 ? 'Suggested Pull Over' : 'Monitoring'
+        })) : [];
+        setEvents(ev);
+      } catch {
+        setEvents([]);
       } finally {
         if (mounted) setLoading(false);
       }

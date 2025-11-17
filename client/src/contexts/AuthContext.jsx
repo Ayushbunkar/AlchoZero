@@ -9,25 +9,48 @@ export const AuthProvider = ({ children }) => {
     const raw = localStorage.getItem('auth_user');
     return raw ? JSON.parse(raw) : null;
   });
+  // Hydrate from token at startup
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (!token || user) return;
+    (async () => {
+      try {
+        const { me } = await import('../services/api');
+        const data = await me();
+        const u = { ...(data?.user || {}), deviceId: data?.deviceId };
+        if (u && u.email) setUser(u);
+        if (data?.deviceId) localStorage.setItem('device_id', data.deviceId);
+      } catch {
+        // ignore
+      }
+    })();
+  }, []);
 
   const login = (name = 'Ayush', role = 'Driver', email) => setUser({ name, role, email });
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('auth_user');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('device_id');
+  };
   const register = async ({ name, email, password, role = 'Driver' }) => {
     // Lazy import to avoid circular
     const { registerUser } = await import('../services/api');
-    const data = await registerUser({ name, email, password, role });
-    const newUser = data.user || { name, email, role };
+    const data = await registerUser({ name, email, password, role: (role || 'Driver').toLowerCase() });
+    const newUser = { ...(data.user || { name, email, role }), deviceId: data.deviceId };
     setUser(newUser);
     if (data.token) localStorage.setItem('auth_token', data.token);
-    return newUser;
+    if (data.deviceId) localStorage.setItem('device_id', data.deviceId);
+    return data;
   };
   const loginCredentials = async ({ email, password }) => {
     const { loginUser } = await import('../services/api');
     const data = await loginUser({ email, password });
-    const newUser = data.user || { name: email.split('@')[0], email, role: 'Driver' };
+    const newUser = { ...(data.user || { name: email.split('@')[0], email, role: 'Driver' }), deviceId: data.deviceId };
     setUser(newUser);
     if (data.token) localStorage.setItem('auth_token', data.token);
-    return newUser;
+    if (data.deviceId) localStorage.setItem('device_id', data.deviceId);
+    return data;
   };
 
   useEffect(() => {

@@ -8,6 +8,13 @@ export const api = axios.create({
   timeout: 8000,
 });
 
+// Attach auth token if present
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -58,4 +65,34 @@ export const forgotPassword = async ({ email }) => {
     // Fallback mock success
     return { message: 'If that email exists, a reset link was sent.' };
   }
+};
+
+export const me = async () => {
+  const res = await api.get('/me');
+  return res.data;
+};
+
+export const updateMe = async (payload) => {
+  const res = await api.put('/me', payload);
+  return res.data;
+};
+
+export const getMyEvents = async (opts = {}) => {
+  const params = {};
+  if (opts.limit) params.limit = opts.limit;
+  if (opts.from) params.from = opts.from;
+  if (opts.to) params.to = opts.to;
+  const res = await api.get('/events/mine', { params });
+  return Array.isArray(res.data) ? res.data : [];
+};
+
+export const refreshToken = async () => {
+  const res = await api.post('/auth/refresh');
+  if (res.data?.token) localStorage.setItem('auth_token', res.data.token);
+  return res.data?.token;
+};
+
+export const bindDevice = async (deviceId) => {
+  const res = await api.post('/devices/bind', { deviceId });
+  return res.data;
 };
