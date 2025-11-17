@@ -24,7 +24,7 @@ const Home = () => {
   return (
     <div className="">
       <Section>
-        <div className="relative">
+        <div className="relative -mt-6 md:-mt-20">
           <GradientGlow />
         <Hero
           title="Smart Safety with"
