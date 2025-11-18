@@ -20,10 +20,12 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
+import DriverDetails from './pages/DriverDetails';
 import { AuthProvider } from './contexts/AuthContext';
 import { DetectionProvider } from './contexts/DetectionContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { SearchProvider } from './contexts/SearchContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import RoleGuard from './components/common/RoleGuard';
 import NotFound from './pages/NotFound';
@@ -60,6 +62,7 @@ const App = () => {
 	const showConsoleUI = consoleRoutes.some((x) => pathname.startsWith(x));
 	return (
 			<MaybeRouter>
+			<SearchProvider>
 			<AuthProvider>
 			<DetectionProvider>
 				<ThemeProvider>
@@ -85,11 +88,12 @@ const App = () => {
 												<Route path="/dashboard" element={<ProtectedRoute><RoleDashboard /></ProtectedRoute>} />
 												<Route path="/devices" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><DeviceManagement /></RoleGuard></ProtectedRoute>} />
 												<Route path="/events" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><EventLog /></RoleGuard></ProtectedRoute>} />
-												<Route path="/users" element={<ProtectedRoute><RoleGuard roles={["superadmin"]}><Users /></RoleGuard></ProtectedRoute>} />
+												<Route path="/users" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><Users /></RoleGuard></ProtectedRoute>} />
 												<Route path="/analytics" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><Analytics /></RoleGuard></ProtectedRoute>} />
 												<Route path="/analytics/device/:deviceId" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><AnalyticsDevice /></RoleGuard></ProtectedRoute>} />
 												<Route path="/settings" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><Settings /></RoleGuard></ProtectedRoute>} />
 												<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+						                                                <Route path="/driver/:id" element={<ProtectedRoute><DriverDetails /></ProtectedRoute>} />
 												<Route path="*" element={<NotFound />} />
 											</Routes>
 										</RouteWrapper>
@@ -97,11 +101,12 @@ const App = () => {
 								</div>
 								<Footer />
 							</div>
-						</MobileSidebarProvider>
-					</ToastProvider>
-				</ThemeProvider>
-			</DetectionProvider>
-			</AuthProvider>
+								</MobileSidebarProvider>
+								</ToastProvider>
+								</ThemeProvider>
+								</DetectionProvider>
+								</AuthProvider>
+								</SearchProvider>
 			</MaybeRouter>
 	);
 };

@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import meRoutes from "./routes/meRoutes.js";
+import driverRoutes from "./routes/driverRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 4500;
@@ -51,6 +52,7 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/drivers", driverRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/me", meRoutes);
 

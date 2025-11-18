@@ -7,3 +7,4 @@ router.get("/", getVehicles);
 router.post("/add", addVehicle);
 
 export default router;
+    

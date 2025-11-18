@@ -19,7 +19,7 @@ const SidebarAdmin = () => {
         <Item to="/dashboard" icon={Gauge}>Dashboard</Item>
         <Item to="/devices" icon={ScanFace}>Devices</Item>
         <Item to="/events" icon={ListOrdered}>Events</Item>
-        <Item to="/users" icon={Users}>Users</Item>
+        <Item to="/users" icon={Users}>Systems</Item>
         <Item to="/settings" icon={Cog}>Settings</Item>
       </div>
     </aside>

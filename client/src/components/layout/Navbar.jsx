@@ -26,6 +26,9 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const pathname = location.pathname || '';
+  const consoleRoutes = ['/dashboard', '/devices', '/events', '/users', '/analytics', '/settings'];
+  const showConsoleUI = consoleRoutes.some((x) => pathname.startsWith(x));
   // Right hamburger now always toggles the navbar menu
   // Close mobile menu on route change
   React.useEffect(() => { setOpen(false); }, [location.pathname]);
@@ -76,6 +79,7 @@ const Navbar = () => {
         onClick={() => setOpen(false)}
       />
     )}
+    {/* Topbar removed from Navbar */}
     </>
   );
 };

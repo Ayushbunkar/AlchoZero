@@ -23,7 +23,7 @@ const SimplePie = ({ data = [], colors = [], size = 180, stroke = 18, className 
     <svg
       viewBox={`0 0 ${size} ${size}`}
       width="100%"
-      height="auto"
+      height="100%"
       style={{ maxWidth: '100%', minWidth: 0, display: 'block' }}
       preserveAspectRatio="xMidYMid meet"
       className={className}
