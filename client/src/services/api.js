@@ -86,6 +86,16 @@ export const getMyEvents = async (opts = {}) => {
   return Array.isArray(res.data) ? res.data : [];
 };
 
+export const getMyDriverStats = async () => {
+  try {
+    const res = await api.get('/drivers/me/stats');
+    return res.data || {};
+  } catch (e) {
+    console.error('Failed to fetch driver stats', e?.response?.data || e.message);
+    return {};
+  }
+};
+
 export const refreshToken = async () => {
   const res = await api.post('/auth/refresh');
   if (res.data?.token) localStorage.setItem('auth_token', res.data.token);

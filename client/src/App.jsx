@@ -87,7 +87,7 @@ const App = () => {
 												<Route path="/reset-password" element={<ResetPassword />} />
 												<Route path="/dashboard" element={<ProtectedRoute><RoleDashboard /></ProtectedRoute>} />
 												<Route path="/devices" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><DeviceManagement /></RoleGuard></ProtectedRoute>} />
-												<Route path="/events" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><EventLog /></RoleGuard></ProtectedRoute>} />
+												<Route path="/events" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin","driver"]}><EventLog /></RoleGuard></ProtectedRoute>} />
 												<Route path="/users" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><Users /></RoleGuard></ProtectedRoute>} />
 												<Route path="/analytics" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><Analytics /></RoleGuard></ProtectedRoute>} />
 												<Route path="/analytics/device/:deviceId" element={<ProtectedRoute><RoleGuard roles={["admin","superadmin"]}><AnalyticsDevice /></RoleGuard></ProtectedRoute>} />

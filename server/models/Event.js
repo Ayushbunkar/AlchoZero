@@ -5,6 +5,9 @@ const eventSchema = new mongoose.Schema({
   riskLevel: { type: Number, required: true },
   status: { type: String },
   message: { type: String },
+  // Optional telemetry fields (may be present if ingested by device)
+  speed: { type: Number }, // km/h
+  distanceDelta: { type: Number }, // meters traveled since last event
   timestamp: { type: Date, default: Date.now },
 });
 

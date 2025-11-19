@@ -13,7 +13,8 @@ const EventLog = () => {
   const { events: liveEvents } = useDetection();
   const { user } = useAuth();
   const [search] = useSearchParams();
-  const filterDeviceId = search.get('deviceId') || '';
+  const initialDeviceParam = search.get('deviceId') || '';
+  const [filterDeviceId, setFilterDeviceId] = useState(initialDeviceParam);
   const [fFrom, setFFrom] = useState('');
   const [fTo, setFTo] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,14 @@ const EventLog = () => {
     const t = setInterval(fetchData, 30000);
     return () => clearInterval(t);
   }, [filterDeviceId, fFrom, fTo, user?.role]);
+
+  // If logged in as Driver, default the device filter to the driver's device id (if available)
+  useEffect(() => {
+    if (user?.role === 'Driver') {
+      const deviceIdFromUser = user?.deviceId || localStorage.getItem('device_id') || '';
+      if (deviceIdFromUser && !filterDeviceId) setFilterDeviceId(deviceIdFromUser);
+    }
+  }, [user]);
 
   const mergedLive = liveEvents.map(mapEvent).filter(Boolean);
   const all = useMemo(() => {

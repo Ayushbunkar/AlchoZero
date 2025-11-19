@@ -1,8 +1,10 @@
 // Driver sees only personal status and actions; no admin panels
 import Button from '../../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 import MyRecentAlerts from '../../components/dashboard/MyRecentAlerts';
 import { useEffect, useState, useMemo } from 'react';
 import { getMyEvents } from '../../services/api';
+import { getMyDriverStats } from '../../services/api';
 import SimplePie from '../../components/analytics/SimplePie';
 import SimpleBar from '../../components/analytics/SimpleBar';
 import SimpleLine from '../../components/analytics/SimpleLine';
@@ -19,7 +21,10 @@ const DashboardDriver = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
   const confirmHelp = () => { setConfirmOpen(false); showToast('Help request sent (mock).', 'success', 2500); };
+  const navigate = useNavigate();
 
   // Fetch only this driver's events; fallback to local context if backend is empty
   useEffect(() => {
@@ -46,6 +51,24 @@ const DashboardDriver = () => {
     })();
     return () => { mounted = false; };
   }, [deviceId, localEvents]);
+
+  // Fetch summary stats for this driver
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setStatsLoading(true);
+      try {
+        const s = await getMyDriverStats();
+        if (!mounted) return;
+        setStats(s || {});
+      } catch (e) {
+        setStats({});
+      } finally {
+        if (mounted) setStatsLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   // Normalize and filter events for charting
   const validEvents = useMemo(() => {
@@ -100,6 +123,27 @@ const DashboardDriver = () => {
     <div>
       <Section>
         <MotionInView>
+          {/* Top summary stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col">
+              <div className="text-xs text-gray-400">Average Speed</div>
+              <div className="text-2xl font-semibold mt-1">{statsLoading ? '—' : (stats?.avgSpeed != null ? `${stats.avgSpeed} km/h` : 'N/A')}</div>
+            </div>
+            <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col">
+              <div className="text-xs text-gray-400">Driving Score</div>
+              <div className="text-2xl font-semibold mt-1">{statsLoading ? '—' : (stats?.drivingScore != null ? stats.drivingScore : 'N/A')}</div>
+            </div>
+            <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col">
+              <div className="text-xs text-gray-400">Distance (last 90d)</div>
+              <div className="text-2xl font-semibold mt-1">{statsLoading ? '—' : (stats?.totalDistanceMeters != null ? `${(stats.totalDistanceMeters/1000).toFixed(2)} km` : 'N/A')}</div>
+            </div>
+            <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col">
+              <div className="text-xs text-gray-400">Avg Risk</div>
+              <div className="text-2xl font-semibold mt-1">{statsLoading ? '—' : (stats?.avgRisk != null ? (stats.avgRisk * 100).toFixed(1) + '%' : 'N/A')}</div>
+            </div>
+          </div>
+        </MotionInView>
+        <MotionInView>
           {/* Analytics for driver */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center min-w-0">
@@ -146,6 +190,7 @@ const DashboardDriver = () => {
             <div className="flex flex-wrap gap-2">
               <Button variant="danger">Notify Emergency Contact</Button>
               <Button variant="outline" onClick={() => setConfirmOpen(true)}>Request Help</Button>
+              <Button variant="outline" onClick={() => navigate('/events')}>My Events</Button>
             </div>
           </div>
         </MotionInView>
