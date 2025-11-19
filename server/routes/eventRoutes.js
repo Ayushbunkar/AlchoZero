@@ -1,8 +1,8 @@
 import express from "express";
 import { getEvents, getRecentEvents, seedEvent } from "../controllers/eventController.js";
 import { requireAuth } from "../utils/authMiddleware.js";
-import Device from "../models/Device.js";
-import Event from "../models/Event.js";
+import { findDevicesByOwnerId } from "../services/deviceService.js";
+import { findEventsByDeviceIds } from "../services/eventService.js";
 
 const router = express.Router();
 
@@ -12,10 +12,10 @@ router.get("/recent", getRecentEvents);
 // Convenience: events for the authenticated user's device(s)
 router.get("/mine", requireAuth, async (req, res) => {
 	try {
-		const devices = await Device.find({ ownerId: String(req.userId) }).lean();
-		const ids = devices.map((d) => String(d._id));
+		const devices = await findDevicesByOwnerId(String(req.userId));
+		const ids = devices.map((d) => d.id);
 		const lim = Math.max(1, Math.min(parseInt(req.query?.limit || 50, 10) || 50, 200));
-		const events = await Event.find({ deviceId: { $in: ids } }).sort({ timestamp: -1 }).limit(lim).exec();
+		const events = await findEventsByDeviceIds(ids, { limit: lim });
 		res.json(events);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
@@ -31,12 +31,12 @@ router.get('/stream', requireAuth, async (req, res) => {
 		'Cache-Control': 'no-cache',
 		Connection: 'keep-alive'
 	});
-	const devices = await Device.find({ ownerId: String(req.userId) }).lean();
-	const ids = devices.map(d => String(d._id));
+	const devices = await findDevicesByOwnerId(String(req.userId));
+	const ids = devices.map(d => d.id);
 	const send = async () => {
 		try {
-			const ev = await Event.find({ deviceId: { $in: ids } }).sort({ timestamp: -1 }).limit(1).lean();
-			const latest = ev[0];
+			const events = await findEventsByDeviceIds(ids, { limit: 1 });
+			const latest = events[0];
 			if (latest) {
 				res.write(`data: ${JSON.stringify(latest)}\n\n`);
 			}

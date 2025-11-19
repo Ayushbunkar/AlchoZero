@@ -1,6 +1,5 @@
-import Detection from "../models/Detection.js";
-import Event from "../models/Event.js";
-import User from "../models/User.js";
+import { createEvent } from '../services/eventService.js';
+import { findUserById, listUsers } from '../services/userService.js';
 import sendEmail from "../utils/sendEmail.js";
 import { isHighRisk } from "../utils/validateThreshold.js";
 
@@ -12,19 +11,23 @@ export const receiveDetection = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid confidence" });
     }
 
-    const detection = await Detection.create({ deviceId, confidence, status });
-
-    const user = (await User.findOne()) || { threshold: 0.7, emergencyContact: process.env.EMERGENCY_EMAIL };
+    // Get user for threshold check
+    const users = await listUsers({ limit: 1 });
+    const user = users[0] || { threshold: 0.7, emergencyContact: process.env.EMERGENCY_EMAIL };
     const highRisk = isHighRisk(confidence, user.threshold);
 
-    if (highRisk) {
-      await Event.create({
-        deviceId,
-        riskLevel: confidence,
-        status: "High Risk",
-        message: "Driver may be intoxicated or unsafe",
-      });
+    // Create event with detection data
+    const event = await createEvent({
+      deviceId,
+      riskLevel: confidence >= 0.8 ? 'critical' : confidence >= 0.6 ? 'high' : confidence >= 0.3 ? 'medium' : 'low',
+      detectedValue: confidence,
+      metadata: { 
+        status: highRisk ? "High Risk" : status || "Normal",
+        message: highRisk ? "Driver may be intoxicated or unsafe" : "Detection received"
+      }
+    });
 
+    if (highRisk) {
       const notifyTo = user.emergencyContact || process.env.EMERGENCY_EMAIL;
       if (process.env.MAIL_USER && notifyTo) {
         try {
@@ -40,7 +43,7 @@ export const receiveDetection = async (req, res) => {
       }
     }
 
-    return res.json({ success: true, detection, highRisk });
+    return res.json({ success: true, detection: event, highRisk });
   } catch (error) {
     console.error("receiveDetection error:", error);
     return res.status(500).json({ success: false, message: "Server error" });

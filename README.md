@@ -69,25 +69,56 @@ All environment variables are pre-configured in `server/.env`:
 
 ## 📡 API Endpoints
 
-### Authentication
+**📖 Documentation for Integration:**
+- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Complete API reference with schemas and examples
+- **[INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md)** - Quick start guide for external developers
+
+### Quick Reference
+
+#### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
 - `POST /api/auth/refresh` - Refresh JWT token
+- `POST /api/auth/forgot` - Password reset request
 
-### Events
+#### Events
 - `GET /api/events` - Get detection events
+- `GET /api/events/recent` - Get recent events
+- `GET /api/events/mine` - Get user's device events
+- `GET /api/events/stream` - SSE real-time event stream
 - `POST /api/events/seed` - Create demo event
 
-### Devices
+#### Devices
 - `GET /api/devices` - Get all devices
 - `POST /api/devices/add` - Add new device
+- `POST /api/devices/bind` - Bind device to user
 
-### Drivers
+#### Drivers
+- `GET /api/drivers` - List drivers
+- `GET /api/drivers/:id` - Get driver details
 - `GET /api/drivers/me/stats` - Get driver statistics
+- `POST /api/drivers/:id/capture` - Capture driver photos (admin)
 
-### Users
-- `GET /api/users` - Get users (admin)
+#### Users
+- `GET /api/users` - Get users
 - `PUT /api/users/settings` - Update user settings
+
+#### Profile
+- `GET /api/me` - Get current user profile
+- `PUT /api/me` - Update current user profile
+
+#### Vehicles
+- `GET /api/vehicles` - Get all vehicles
+- `POST /api/vehicles/add` - Add new vehicle
+
+#### Detection
+- `POST /api/detection/update` - Receive detection data from device
+
+#### Upload
+- `POST /api/upload/driver-photo` - Upload driver photo
+- `DELETE /api/upload/driver-photo` - Delete driver photo
+
+**For complete request/response schemas, authentication details, and integration examples, see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)**
 
 ## 🗄️ Database
 
