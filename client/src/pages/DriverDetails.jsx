@@ -77,6 +77,7 @@ const DriverDetails = () => {
         if (!mounted) return;
         setDriver(d);
       } catch (e) {
+        console.error('Error loading driver:', e);
         setDriver(null);
       } finally { if (mounted) setLoading(false); }
     };
@@ -86,6 +87,22 @@ const DriverDetails = () => {
 
   if (loading) return <div className="p-6">Loading…</div>;
   if (!driver) return <div className="p-6">Driver not found</div>;
+
+  // Safely access driver properties with defaults
+  const photo = driver.photoURL || driver.photo || '/images/avatars/default-avatar.png';
+  const name = driver.name || 'Unknown Driver';
+  const driverId = driver.driver_id || driver.id || 'N/A';
+  const vehicle = driver.vehicleName || driver.vehicle || 'Not Assigned';
+  const vehicleNumber = driver.vehicleNumber || 'N/A';
+  const license = driver.license || 'N/A';
+  const contact = driver.contact || 'N/A';
+  const age = driver.age || 'N/A';
+  const status = driver.status || 'Active';
+  const riskScore = driver.riskScore || 0;
+  const engineOn = driver.engineOn || false;
+  const speed = driver.speed || 0;
+  const faceAuth = driver.faceAuth !== undefined ? driver.faceAuth : true;
+  const createdAt = driver.createdAt ? new Date(driver.createdAt).toLocaleDateString() : 'N/A';
 
   const trend = (driver.trend || []).map(t => ({ ts: new Date(t.ts).toLocaleDateString(), score: Math.round(t.score) }));
   const bars = (driver.behavior7 || []).map((b, i) => ({ name: `Day ${i+1}`, value: b.value }));
@@ -104,15 +121,46 @@ const DriverDetails = () => {
       </div>
       <Section>
         <div className="flex gap-6 items-center">
-          <img src={driver.photo} alt={driver.name} className="w-32 h-32 rounded-full object-cover" />
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-100">{driver.name}</h2>
-            <div className="text-sm text-gray-400">ID: {driver.id} • Vehicle: {driver.vehicle}</div>
-            <div className="mt-2 text-gray-300">License: {driver.license} • Contact: {driver.contact}</div>
-            <div className="mt-2 flex items-center gap-4">
-              <div className="text-sm">Engine: {driver.engineOn ? <span className="text-green-300">On</span> : <span className="text-red-300">Off</span>}</div>
-              <div className="text-sm">Speed: <span className="font-mono">{driver.speed} km/h</span></div>
-              <div className="text-sm">Face: {driver.faceAuth ? <span className="text-green-300">Authenticated</span> : <span className="text-yellow-300">Unknown</span>}</div>
+          <img 
+            src={photo} 
+            alt={name} 
+            className="w-32 h-32 rounded-full object-cover border-2 border-white/10"
+            onError={(e) => { e.target.src = '/images/avatars/default-avatar.png'; }}
+          />
+          <div className="flex-1">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-semibold text-gray-100">{name}</h2>
+              <div className={`px-3 py-1 rounded text-sm ${status === 'Active' ? 'bg-green-600/20 text-green-300' : 'bg-red-600/20 text-red-300'}`}>
+                {status}
+              </div>
+            </div>
+            <div className="mt-2 space-y-1">
+              <div className="text-sm text-gray-400">ID: <span className="text-gray-300">{driverId}</span></div>
+              <div className="text-sm text-gray-400">Vehicle: <span className="text-gray-300">{vehicle} {vehicleNumber !== 'N/A' && `(${vehicleNumber})`}</span></div>
+              <div className="text-sm text-gray-400">License: <span className="text-gray-300">{license}</span></div>
+              <div className="text-sm text-gray-400">Contact: <span className="text-gray-300">{contact}</span></div>
+              <div className="text-sm text-gray-400">Age: <span className="text-gray-300">{age}</span></div>
+              <div className="text-sm text-gray-400">Joined: <span className="text-gray-300">{createdAt}</span></div>
+            </div>
+            <div className="mt-4 flex items-center gap-6">
+              <div className="text-sm">
+                <span className="text-gray-400">Risk Score:</span>
+                <span className={`ml-2 font-bold ${riskScore >= 70 ? 'text-red-400' : riskScore >= 40 ? 'text-yellow-400' : 'text-green-400'}`}>
+                  {riskScore}%
+                </span>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-400">Engine:</span>
+                {engineOn ? <span className="ml-2 text-green-300">On</span> : <span className="ml-2 text-red-300">Off</span>}
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-400">Speed:</span>
+                <span className="ml-2 font-mono text-gray-200">{speed} km/h</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-400">Face:</span>
+                {faceAuth ? <span className="ml-2 text-green-300">Verified</span> : <span className="ml-2 text-yellow-300">Unknown</span>}
+              </div>
             </div>
           </div>
         </div>

@@ -17,3 +17,6 @@ export const requireAuth = (req, res, next) => {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 };
+
+// Alias for authenticate
+export const authenticate = requireAuth;

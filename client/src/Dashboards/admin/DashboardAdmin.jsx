@@ -10,10 +10,13 @@ import { getEvents } from '../../services/detectionService';
 import SimplePie from '../../components/analytics/SimplePie';
 import SimpleBar from '../../components/analytics/SimpleBar';
 import SimpleLine from '../../components/analytics/SimpleLine';
+import AddDriverForm from '../../components/forms/AddDriverForm';
+import { UserPlus } from 'lucide-react';
 
 const DashboardAdmin = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddDriver, setShowAddDriver] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -82,8 +85,34 @@ const DashboardAdmin = () => {
 
   // Helper: get last event date
   const lastEventDate = validEvents.length > 0 ? new Date(validEvents[0].date).toLocaleString() : null;
+
+  const handleDriverAdded = (driver) => {
+    console.log('Driver added successfully:', driver);
+    // Trigger event to refresh drivers list
+    window.dispatchEvent(new CustomEvent('driverAdded', { detail: driver }));
+  };
+
   return (
     <div>
+      {/* Add Driver Button - Fixed position */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setShowAddDriver(true)}
+          className="flex items-center gap-2 px-6 py-3 bg-accent-yellow hover:bg-accent-yellow/90 text-bg-primary font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          title="Add New Driver"
+        >
+          <UserPlus size={20} />
+          <span>Add Driver</span>
+        </button>
+      </div>
+
+      {/* Add Driver Form Modal */}
+      <AddDriverForm
+        open={showAddDriver}
+        onClose={() => setShowAddDriver(false)}
+        onSuccess={handleDriverAdded}
+      />
+
       <Section>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="space-y-4">

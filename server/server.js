@@ -10,6 +10,7 @@ import vehicleRoutes from "./routes/vehicleRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import meRoutes from "./routes/meRoutes.js";
 import driverRoutes from "./routes/driverRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 4500;
@@ -55,6 +56,7 @@ app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/me", meRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.get("/", (req, res) => {
   res.send("Drunk Driving Detection Backend Running 🚗");
