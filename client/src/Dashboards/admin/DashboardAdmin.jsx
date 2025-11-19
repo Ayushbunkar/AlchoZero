@@ -137,11 +137,11 @@ const DashboardAdmin = () => {
                 <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center min-w-0">
                   <div className="text-sm font-semibold text-accent-yellow mb-2">Risk Distribution</div>
                   <div className="w-full flex flex-col items-center min-w-0">
-                    <div className="w-full max-w-[180px] min-w-0">
+                    <div className="w-full max-w-[160px] min-w-0 mx-auto">
                       {riskPie.every(s=>s.value===0) ? (
                         <div className="text-xs text-gray-500 text-center">No data</div>
                       ) : (
-                        <SimplePie data={riskPie} colors={["#ef4444","#f59e0b","#10b981"]} size={140} />
+                        <SimplePie data={riskPie} colors={["#ef4444","#f59e0b","#10b981"]} size={130} stroke={12} />
                       )}
                     </div>
                     <div className="mt-2 text-xs text-gray-300 space-y-1 w-full">
@@ -160,11 +160,11 @@ const DashboardAdmin = () => {
                 {/* Bar Chart */}
                 <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center min-w-0">
                   <div className="text-sm font-semibold text-accent-yellow mb-2">Recent Risk Levels</div>
-                  <div className="w-full max-w-[220px] min-w-0 overflow-x-auto">
+                  <div className="w-full min-w-0">
                     {riskBar.length === 0 ? (
                       <div className="text-xs text-gray-500 text-center">No data</div>
                     ) : (
-                      <svg width="220" height="100" viewBox="0 0 220 100" style={{width:'100%'}}>
+                      <svg width="100%" height="100" viewBox="0 0 220 100" style={{maxWidth:'100%',display:'block'}} preserveAspectRatio="xMidYMid meet">
                         {riskBar.map((bar, i) => {
                           const max = 100;
                           const h = Math.round((bar.value / max) * 60);
@@ -186,7 +186,7 @@ const DashboardAdmin = () => {
                 {/* Line Chart */}
                 <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center min-w-0">
                   <div className="text-sm font-semibold text-accent-yellow mb-2">Event Trend (10 days)</div>
-                  <div className="w-full max-w-[260px] min-w-0 overflow-x-auto">
+                  <div className="w-full min-w-0">
                     {byDay.length === 0 ? (
                       <div className="text-xs text-gray-500 text-center">No data</div>
                     ) : (

@@ -84,11 +84,13 @@ const AnalyticsDevice = () => {
             <Tilt3D intensity="subtle">
               <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4">
                 <div className="text-sm font-semibold text-accent-yellow mb-2">Risk Distribution</div>
-                {riskPie.every(s=>s.value===0) ? (
-                  <div className="text-xs text-gray-500">No events for selected range.</div>
-                ) : (
-                  <SimplePie data={riskPie} colors={["#ef4444","#f59e0b","#10b981"]} size={180} />
-                )}
+                <div className="w-full max-w-[200px] mx-auto">
+                  {riskPie.every(s=>s.value===0) ? (
+                    <div className="text-xs text-gray-500 text-center">No events for selected range.</div>
+                  ) : (
+                    <SimplePie data={riskPie} colors={["#ef4444","#f59e0b","#10b981"]} size={160} stroke={14} />
+                  )}
+                </div>
                 <div className="mt-2 text-xs text-gray-300 space-y-1">
                   {(() => { const total = (riskPie[0]?.value||0)+(riskPie[1]?.value||0)+(riskPie[2]?.value||0)||1; return (
                     <>

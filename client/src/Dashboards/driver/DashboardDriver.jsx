@@ -149,8 +149,8 @@ const DashboardDriver = () => {
             <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center min-w-0">
               <div className="text-sm font-semibold text-accent-yellow mb-2">My Risk Distribution</div>
               <div className="w-full flex flex-col items-center min-w-0">
-                <div className="w-full max-w-[220px] min-w-0">
-                  <SimplePie data={riskPie} colors={["#ef4444", "#f59e0b", "#10b981"]} size={180} />
+                <div className="w-full max-w-[200px] min-w-0 mx-auto">
+                  <SimplePie data={riskPie} colors={["#ef4444", "#f59e0b", "#10b981"]} size={160} stroke={14} />
                 </div>
                 <div className="mt-2 text-xs text-gray-300 space-y-1 w-full">
                   {(() => {
@@ -167,8 +167,8 @@ const DashboardDriver = () => {
             </div>
             <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center min-w-0">
               <div className="text-sm font-semibold text-accent-yellow mb-2">Recent Risk Levels</div>
-              <div className="w-full max-w-[320px] min-w-0 overflow-x-auto">
-                <SimpleBar data={riskBar} width={320} height={120} />
+              <div className="w-full min-w-0">
+                <SimpleBar data={riskBar} width={320} height={140} />
               </div>
             </div>
           </div>
@@ -177,8 +177,8 @@ const DashboardDriver = () => {
         <MotionInView>
           <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-4 flex flex-col items-center mt-4 min-w-0">
             <div className="text-sm font-semibold text-accent-yellow mb-2">Event Trend (last 10 days)</div>
-            <div className="w-full max-w-[520px] min-w-0 overflow-x-auto">
-              <SimpleLine points={byDay} width={520} height={160} />
+            <div className="w-full min-w-0">
+              <SimpleLine points={byDay} width={520} height={180} />
             </div>
           </div>
         </MotionInView>
