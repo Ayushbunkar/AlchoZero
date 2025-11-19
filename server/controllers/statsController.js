@@ -1,5 +1,5 @@
-import Event from '../models/Event.js';
-import Device from '../models/Device.js';
+import { findDevicesByOwnerId } from '../services/deviceService.js';
+import { getEventStats, findEventsByDeviceIds } from '../services/eventService.js';
 
 // GET /api/drivers/me/stats
 export const getMyDriverStats = async (req, res) => {
@@ -8,8 +8,8 @@ export const getMyDriverStats = async (req, res) => {
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
     // Find devices owned by this user
-    const devices = await Device.find({ ownerId: String(userId) }).exec();
-    const deviceIds = devices.map(d => String(d._id));
+    const devices = await findDevicesByOwnerId(userId);
+    const deviceIds = devices.map(d => d.id);
 
     // If no devices, return zeros
     if (!deviceIds.length) {
@@ -29,42 +29,41 @@ export const getMyDriverStats = async (req, res) => {
     const from = new Date();
     from.setDate(from.getDate() - 90);
 
-    const events = await Event.find({ deviceId: { $in: deviceIds }, timestamp: { $gte: from } }).exec();
-
-    const eventsCount = events.length;
-    if (eventsCount === 0) {
+    // Use event service to get stats
+    const stats = await getEventStats(deviceIds, from, null);
+    
+    if (stats.total === 0) {
       return res.json({ eventsCount: 0 });
     }
 
-    let sumRisk = 0;
+    // Get recent events to find last active time and high risk count
+    const events = await findEventsByDeviceIds(deviceIds, { 
+      limit: 1000, 
+      startDate: from 
+    });
+
+    const riskValues = { 'low': 0.2, 'medium': 0.5, 'high': 0.8, 'critical': 1.0 };
     let highRiskCount = 0;
-    let speedSum = 0;
-    let speedCount = 0;
-    let distanceSum = 0;
-    let distanceFound = false;
     let lastActive = null;
 
     for (const e of events) {
-      const r = typeof e.riskLevel === 'number' ? e.riskLevel : (typeof e.risk === 'number' ? e.risk : 0);
-      sumRisk += (typeof r === 'number' ? r : 0);
-      if (r >= 0.7) highRiskCount++;
-      if (typeof e.speed === 'number') { speedSum += e.speed; speedCount++; }
-      if (typeof e.distanceDelta === 'number') { distanceSum += e.distanceDelta; distanceFound = true; }
-      if (!lastActive || (e.timestamp && new Date(e.timestamp) > new Date(lastActive))) lastActive = e.timestamp;
+      const riskValue = riskValues[e.riskLevel] || 0;
+      if (riskValue >= 0.7) highRiskCount++;
+      
+      const eventTime = e.timestamp?.toDate?.() || e.timestamp;
+      if (!lastActive || eventTime > lastActive) {
+        lastActive = eventTime;
+      }
     }
 
-    const avgRisk = eventsCount ? (sumRisk / eventsCount) : null;
-    const drivingScore = avgRisk !== null ? Math.max(0, 100 - Math.round(avgRisk * 100)) : null; // simple heuristic
-    const avgSpeed = speedCount ? (speedSum / speedCount) : null;
-    const totalDistanceMeters = distanceFound ? distanceSum : null;
-    const safePercentage = eventsCount ? Math.round(((eventsCount - highRiskCount) / eventsCount) * 100) : null;
+    const safePercentage = stats.total ? Math.round(((stats.total - highRiskCount) / stats.total) * 100) : null;
 
     return res.json({
-      eventsCount,
-      avgRisk: typeof avgRisk === 'number' ? Number(avgRisk.toFixed(3)) : null,
-      drivingScore,
-      avgSpeed: avgSpeed !== null ? Number(avgSpeed.toFixed(1)) : null,
-      totalDistanceMeters: totalDistanceMeters !== null ? Math.round(totalDistanceMeters) : null,
+      eventsCount: stats.total,
+      avgRisk: stats.avgRisk,
+      drivingScore: stats.drivingScore,
+      avgSpeed: stats.avgSpeed,
+      totalDistanceMeters: stats.totalDistance ? Math.round(stats.totalDistance) : null,
       highRiskCount,
       safePercentage,
       lastActive,

@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js";
+import { db } from "./config/firebase/firebaseAdmin.js";
 import detectionRoutes from "./routes/detectionRoutes.js";
 import deviceRoutes from "./routes/deviceRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
@@ -15,7 +15,8 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 dotenv.config();
 const PORT = process.env.PORT || 4500;
 
-connectDB();
+// Initialize Firebase Admin (connection is automatic)
+console.log('Firebase Admin initialized with Firestore');
 
 const app = express();
 
@@ -59,23 +60,37 @@ app.use("/api/me", meRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Drunk Driving Detection Backend Running 🚗");
+  res.send("Drunk Driving Detection Backend Running 🚗 (Firebase + Firestore)");
 });
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
 
 // Background seeding job (demo) - every 25s create an event for each device
-import Event from './models/Event.js';
-import Device from './models/Device.js';
+// Note: In production, consider using Cloud Functions for scheduled tasks
+import { listDevices } from './services/deviceService.js';
+import { createEvent } from './services/eventService.js';
+
 const SEED_INTERVAL_MS = 25000;
 setInterval(async () => {
   try {
-    const devices = await Device.find({}).lean();
+    const devices = await listDevices({ limit: 100 });
     for (const d of devices) {
-      const riskLevel = Number(Math.random().toFixed(2));
-      await Event.create({ deviceId: String(d._id), riskLevel, status: riskLevel >= 0.7 ? 'High Risk' : riskLevel >= 0.4 ? 'Possible Impairment' : 'Normal', message: 'Background seed' });
+      const riskLevelValue = Number(Math.random().toFixed(2));
+      const riskLevel = riskLevelValue >= 0.8 ? 'critical' : riskLevelValue >= 0.6 ? 'high' : riskLevelValue >= 0.3 ? 'medium' : 'low';
+      
+      await createEvent({ 
+        deviceId: d.id, 
+        riskLevel,
+        detectedValue: riskLevelValue,
+        speed: Math.floor(Math.random() * 80) + 20,
+        distanceDelta: Math.random() * 5,
+        metadata: { 
+          status: riskLevelValue >= 0.7 ? 'High Risk' : riskLevelValue >= 0.4 ? 'Possible Impairment' : 'Normal', 
+          message: 'Background seed' 
+        }
+      });
     }
   } catch (e) {
-    // swallow errors to avoid crashing seed loop
+    console.error('Background seeding error:', e.message);
   }
 }, SEED_INTERVAL_MS);
