@@ -4,12 +4,13 @@ import Section from '../components/common/Section';
 import MotionInView from '../components/common/MotionInView';
 import GradientGlow from '../components/common/GradientGlow';
 import Hero from '../components/marketing/Hero';
-import FeatureGrid from '../components/marketing/FeatureGrid';
 import StatsStrip from '../components/marketing/StatsStrip';
 import TestimonialCarousel from '../components/marketing/TestimonialCarousel';
 import { useAuth } from '../contexts/AuthContext';
 import { Car, ShieldAlert, Activity } from 'lucide-react';
 import homeHero from '../assets/images/homeimage.png';
+import logo from '../assets/images/logo.jpg';
+import Services from './Services';
 
 const Home = () => {
   const { user } = useAuth();
@@ -21,43 +22,47 @@ const Home = () => {
       navigate('/login', { state: { from: '/dashboard' } });
     }
   };
+  const goToServices = () => navigate('/services');
   return (
-    <div className="">
+    <div className="mt-15">
       <Section>
         <div className="relative -mt-6 md:-mt-20">
           <GradientGlow />
-        <Hero
-          title="Smart Safety with"
-          highlight="AlchoZero"
-          subtitle="Prevent drunk driving before it happens — detect impairment and disable ignition."
-          primaryAction="Go to Dashboard"
-          secondaryAction="Learn More"
-          onPrimary={goToDashboard}
-          onSecondary={() => navigate('/about')}
-          imageSrc={homeHero}
-          imageAlt="Illustration for AlchoZero home hero"
-        />
-        <MotionInView>
-          <StatsStrip
-            stats={[
-              { label: 'Simulated Devices', value: '12' },
-              { label: 'Events Logged', value: '1,248' },
-              { label: 'Average Risk', value: '23%' },
-              { label: 'Uptime', value: '99.9%' },
-            ]}
+          {/* Logo placed near hero text; use blend to visually remove dark background */}
+          {/* <div className="absolute left-0 top-6 md:left-5 md:top-30 z-20 pointer-events-none">
+            <img
+              src={logo}
+              alt="AlchoZero logo"
+              className="h-12 md:h-16 object-contain mix-blend-screen filter brightness-125"
+            />
+          </div> */}
+          <Hero
+            title="Smart Safety with"
+            highlight="AlchoZero"
+            subtitle="Prevent drunk driving before it happens — detect impairment and disable ignition."
+            primaryAction="Go to Dashboard"
+            secondaryAction="Learn More"
+            onPrimary={goToDashboard}
+            onSecondary={() => navigate('/about')}
+            imageSrc={homeHero}
+            imageAlt="Illustration for AlchoZero home hero"
           />
-        </MotionInView>
+          <MotionInView>
+            <StatsStrip
+              stats={[
+                { label: 'Simulated Devices', value: '12' },
+                { label: 'Events Logged', value: '1,248' },
+                { label: 'Average Risk', value: '23%' },
+                { label: 'Uptime', value: '99.9%' },
+              ]}
+            />
+          </MotionInView>
         </div>
       </Section>
-      <Section title="Why AlchoZero" subtitle="Modern safety features designed to be reliable, responsive, and easy to use.">
-        <FeatureGrid
-          items={[
-            { title: 'Live Camera', icon: Car, desc: 'Preview your webcam stream as if it were an in-vehicle camera feed.' },
-            { title: 'Risk Meter', icon: Activity, desc: 'Animated confidence bar changing color with escalating detection risk.' },
-            { title: 'Event Log', icon: ShieldAlert, desc: 'Historical data and CSV export for analysis and reporting.' },
-          ]}
-        />
-      </Section>
+      {/* Feature grid removed as requested to make the Home page more focused */}
+      {/* Embedded Services content (inline on Home) */}
+      <Services />
+
       <Section title="Trusted by teams" subtitle="Here’s what early users say about our prototype.">
         <TestimonialCarousel
           items={[
@@ -70,6 +75,7 @@ const Home = () => {
           <Link to="/contact" className="text-sm text-accent-yellow hover:underline">Have feedback? Contact us →</Link>
         </div>
       </Section>
+
       <Section>
         <div className="text-center text-xs text-gray-500">Prototype only – no real impairment analysis performed.</div>
       </Section>

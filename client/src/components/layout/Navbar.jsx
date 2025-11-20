@@ -58,7 +58,6 @@ const Navbar = () => {
       <div id="navbar-mobile-menu" className={`flex-col md:flex-row md:flex ${open ? 'flex' : 'hidden'} md:items-center gap-2 absolute md:static left-0 right-0 top-full md:top-auto bg-bg md:bg-transparent px-4 md:px-0 py-3 md:py-0 border-b md:border-none border-white/10 shadow-xl z-80 text-white`}>
   <NavItem to="/">Home</NavItem>
   <NavItem to="/about">About</NavItem>
-  <NavItem to="/services">Services</NavItem>
   <NavItem to="/contact">Contact</NavItem>
   {user && <NavItem to="/dashboard">Dashboard</NavItem>}
         <button aria-label="Toggle Theme" onClick={toggleTheme} className="px-2 py-1 rounded-lg text-sm border border-white/10 text-white md:text-gray-300 md:hover:text-white">
